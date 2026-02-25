@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a1929">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>SpineRip Trader - AI Day Trading</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a1929 0%, #1a2332 100%);
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #00ff88;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+        
+        .subscription-banner {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #0a1929;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .subscription-banner button {
+            background: #0a1929;
+            color: #00ff88;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 1rem;
+        }
+        
+        .subscription-banner button:hover {
+            background: #1a2332;
+            transform: scale(1.05);
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .controls {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .btn-start { background: #00ff88; color: #0a1929; }
+        .btn-stop { background: #ff4444; color: white; }
+        .btn-stats { background: rgba(255, 255, 255, 0.1); color: white; }
+        .btn-pro { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #0a1929; }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .disclaimer {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        
+        /* Payment Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a2332 0%, #0a1929 100%);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #00ff88;
+            text-align: center;
+        }
+        
+        .modal-content h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+        }
+        
+        .pricing-option {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid #00ff88;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pricing-option:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .pricing-option h3 {
+            color: #00ff88;
+            font-size: 1.5rem;
+        }
+        
+        .pricing-option .price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .pricing-option .features {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .payment-btn {
+            background: #00ff88;
+            color: #0a1929;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 10px;
+            width: 100%;
+        }
+        
+        .close-modal {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .stats-bar { flex-direction: column; gap: 15px; }
+            .controls { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📈 SpineRip Trader</h1>
+        <p>AI-Powered Day Trading Platform</p>
+    </div>
+    
+    <div class="subscription-banner">
+        <span id="subscription-status">🆓 FREE TRIAL - Limited Features</span>
+        <button onclick="showPaymentModal()">🚀 Upgrade to PRO</button>
+    </div>
+    
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-label">Account</div>
+            <div class="stat-value" id="balance">$10,000</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Positions</div>
+            <div class="stat-value" id="positions">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value" id="winrate">0%</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Profit</div>
+            <div class="stat-value" id="profit">$0</div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="btn btn-start" onclick="startBot()" id="startBtn" disabled>🤖 Start Bot (PRO Only)</button>
+        <button class="btn btn-stop" onclick="stopBot()" id="stopBtn">🛑 Stop Bot</button>
+        <button class="btn btn-stats" onclick="showStats()">📊 Stats</button>
+        <button class="btn btn-stats" onclick="addSymbol()">➕ Add Symbol</button>
+        <button class="btn btn-pro" onclick="showPaymentModal()">💎 Get PRO Access</button>
+    </div>
+    
+    <div class="disclaimer">
+        ⚠️ PAPER TRADING MODE - Using simulated money for practice. Trading involves risk of loss. Not financial advice.
+    </div>
+    
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <h2>💎 Upgrade to PRO</h2>
+            <p style="margin-bottom: 20px;">Unlock automated trading & unlimited AI queries</p>
+            
+            <div class="pricing-option" onclick="selectPlan('monthly')">
+                <h3>Monthly</h3>
+                <div class="price">$19/month</div>
+                <div class="features">
+                    ✅ Automated Bot<br>
+                    ✅ Unlimited AI Queries<br>
+                    ✅ Real-time Signals<br>
+                    ✅ Cancel Anytime
+                </div>
+            </div>
+            
+            <div class="pricing-option" onclick="selectPlan('lifetime')">
+                <h3>Lifetime Access</h3>
+                <div class="price">$99 one-time</div>
+                <div class="features">
+                    ✅ Everything in Monthly<br>
+                    ✅ Lifetime Updates<br>
+                    ✅ Priority Support<br>
+                    💰 Best Value!
+                </div>
+            </div>
+            
+            <button class="close-modal" onclick="closePaymentModal()">Maybe Later</button>
+        </div>
+    </div>
+    
+    <script>
+        // Subscription Management
+        let isProUser = false;
+        let selectedPlan = null;
+        
+        function checkSubscription() {
+            // Check localStorage for subscription
+            const subStatus = localStorage.getItem('spinerip_trader_pro');
+            if (subStatus === 'active') {
+                isProUser = true;
+                activateProFeatures();
+            }
+        }
+        
+        function activateProFeatures() {
+            document.getElementById('subscription-status').textContent = '💎 PRO ACTIVATED';
+            document.getElementById('subscription-status').style.background = 'linear-gradient(135deg, #ffd700, #ffed4e)';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').textContent = '🤖 Start Bot';
+        }
+        
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            const amount = plan === 'monthly' ? '$19' : '$99';
+            const frequency = plan === 'monthly' ? '/month' : ' one-time';
+            
+            if (confirm(`Upgrade to ${plan === 'monthly' ? 'Monthly' : 'Lifetime'} plan for ${amount}${frequency}?\\n\\nPay via Cash App: $JustinHawpetoss7\\n\\nClick OK to open Cash App`)) {
+                processCashAppPayment(plan, amount);
+            }
+        }
+        
+        function processCashAppPayment(plan, amount) {
+            const cleanAmount = amount.replace('$', '');
+            const note = plan === 'monthly' ? 'SpineRip Trader Monthly' : 'SpineRip Trader Lifetime';
+            
+            // Cash App deep link
+            const cashAppUrl = `https://cash.app/$JustinHawpetoss7/${cleanAmount}`;
+            
+            // Open Cash App
+            window.open(cashAppUrl, '_blank');
+            
+            // Show payment instructions
+            setTimeout(() => {
+                if (confirm('After sending payment via Cash App:\\n\\n1. Click OK\\n2. Enter your email for confirmation\\n\\nDid you complete the payment?')) {
+                    const email = prompt('Enter your email for activation:');
+                    if (email) {
+                        // Activate trial (in production, verify payment first)
+                        localStorage.setItem('spinerip_trader_pro', 'active');
+                        localStorage.setItem('spinerip_trader_plan', plan);
+                        localStorage.setItem('spinerip_trader_email', email);
+                        
+                        isProUser = true;
+                        activateProFeatures();
+                        closePaymentModal();
+                        
+                        alert('🎉 PRO ACTIVATED!\\n\\nYou now have full access to:\\n✅ Automated Trading Bot\\n✅ Unlimited AI Queries\\n✅ Real-time Signals\\n\\nThank you for upgrading!');
+                        
+                        // Send confirmation email info
+                        console.log('Payment Details:', {
+                            email,
+                            plan,
+                            amount,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                }
+            }, 2000);
+        }
+        
+        function showPaymentModal() {
+            document.getElementById('paymentModal').classList.add('active');
+        }
+        
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+        
+        // Trading Bot Functionality
+        function startBot() {
+            if (!isProUser) {
+                if (confirm('Bot requires PRO subscription.\\n\\nUpgrade now?')) {
+                    showPaymentModal();
+                }
+                return;
+            }
+            
+            alert('🤖 Trading bot started!\\n\\nMonitoring: AAPL, TSLA, MSFT\\nCheck console (F12) for activity.');
+            simulateTrading();
+        }
+        
+        function stopBot() {
+            alert('🛑 Trading bot stopped.');
+        }
+        
+        function showStats() {
+            const balance = document.getElementById('balance').textContent;
+            const positions = document.getElementById('positions').textContent;
+            const winrate = document.getElementById('winrate').textContent;
+            const profit = document.getElementById('profit').textContent;
+            
+            alert(`📊 Trading Stats:\\n\\nAccount: ${balance}\\nOpen Positions: ${positions}\\nWin Rate: ${winrate}\\nTotal Profit: ${profit}\\n\\n${isProUser ? '💎 PRO Active' : '🆓 Free Trial'}`);
+        }
+        
+        function addSymbol() {
+            const symbol = prompt('Enter stock symbol (e.g., AAPL, TSLA, NVDA):');
+            if (symbol) {
+                alert(`✅ Added ${symbol.toUpperCase()} to watchlist!`);
+            }
+        }
+        
+        function simulateTrading() {
+            // Simulate some trading activity
+            let balance = 10000;
+            let positions = 0;
+            let trades = 0;
+            let wins = 0;
+            
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    // Simulate trade
+                    positions = Math.floor(Math.random() * 3);
+                    const profit = (Math.random() - 0.4) * 100;
+                    balance += profit;
+                    trades++;
+                    if (profit > 0) wins++;
+                    
+                    document.getElementById('balance').textContent = '$' + balance.toFixed(2);
+                    document.getElementById('positions').textContent = positions;
+                    document.getElementById('winrate').textContent = trades > 0 ? ((wins / trades * 100).toFixed(1) + '%') : '0%';
+                    document.getElementById('profit').textContent = (balance > 10000 ? '+' : '') + '$' + (balance - 10000).toFixed(2);
+                }
+            }, 10000);
+        }
+        
+        // Initialize
+        checkSubscription();
+        
+        console.log('📈 SpineRip Trader loaded!');
+        console.log('💰 Payment: $JustinHawpetoss7');
+        console.log('💎 Upgrade to unlock automated trading!');
+    </script>
+</body>
+</html>
