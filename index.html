@@ -214,11 +214,139 @@
             margin-top: 20px;
         }
         
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100%;
+            background: linear-gradient(135deg, #0a1929 0%, #1a2332 100%);
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+            border-left: 3px solid #00ff88;
+        }
+        
+        .sidebar.open {
+            right: 0;
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #0a1929;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 30px 0 0 30px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1999;
+            box-shadow: -3px 3px 10px rgba(0, 255, 136, 0.3);
+            writing-mode: vertical-rl;
+            font-size: 1rem;
+        }
+        
+        .sidebar-toggle:hover {
+            background: linear-gradient(135deg, #00cc6a, #00ff88);
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: rgba(0, 255, 136, 0.1);
+            border-bottom: 2px solid #00ff88;
+        }
+        
+        .sidebar-header h2 {
+            color: #00ff88;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 2px solid #ff4444;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .product-card {
+            background: rgba(0, 255, 136, 0.05);
+            margin: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+            transform: translateX(-5px);
+        }
+        
+        .product-card h3 {
+            color: #00ff88;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .product-card .price {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .product-card .description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .product-card .buy-btn {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #0a1929;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+        }
+        
+        .product-card .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid rgba(0, 255, 136, 0.3);
+            margin-top: 20px;
+        }
+        
         @media (max-width: 768px) {
             .header h1 { font-size: 1.5rem; }
             .stats-bar { flex-direction: column; gap: 15px; }
             .controls { flex-direction: column; }
             .btn { width: 100%; }
+            .sidebar { width: 100%; right: -100%; }
+            .sidebar-toggle { right: 10px; }
         }
     </style>
 </head>
@@ -262,6 +390,83 @@
     
     <div class="disclaimer">
         ⚠️ PAPER TRADING MODE - Using simulated money for practice. Trading involves risk of loss. Not financial advice.
+    </div>
+    
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">🛒 MY PRODUCTS</button>
+    
+    <!-- Products Sidebar -->
+    <div class="sidebar" id="productSidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+            <h2>💰 Make Money With Me</h2>
+            <p style="opacity: 0.8; font-size: 0.9rem;">All products available for purchase</p>
+        </div>
+        
+        <!-- Product 1: SpineRip Trader PRO -->
+        <div class="product-card">
+            <h3>📈 SpineRip Trader PRO</h3>
+            <div class="price">$19/mo or $99 lifetime</div>
+            <div class="description">
+                AI-powered day trading bot with automated execution. 
+                15+ technical indicators, stop loss, take profit, portfolio tracking.
+            </div>
+            <button class="buy-btn" onclick="buyProduct('trader')">💳 Buy Now</button>
+        </div>
+        
+        <!-- Product 2: Crypto Trading Bots -->
+        <div class="product-card">
+            <h3>🤖 Crypto Trading Bots</h3>
+            <div class="price">$19/mo or $499 lifetime</div>
+            <div class="description">
+                6 platform bots: Kraken, Pionex, 3Commas, KuCoin, Cryptohopper, Bitsgap. 
+                Grid bots, DCA bots, unified dashboard.
+            </div>
+            <button class="buy-btn" onclick="buyProduct('crypto')">💳 Buy Now</button>
+        </div>
+        
+        <!-- Product 3: Warp AI Toolkit -->
+        <div class="product-card">
+            <h3>🚀 Warp AI Toolkit</h3>
+            <div class="price">Free + Paid Services</div>
+            <div class="description">
+                3,700+ lines of code. Build apps with OpenClaw, SkyBot, and Warp AI. 
+                Web apps, games, websites with step-by-step prompts.
+            </div>
+            <button class="buy-btn" onclick="buyProduct('toolkit')">🆓 Get Started</button>
+        </div>
+        
+        <!-- Product 4: Custom Development -->
+        <div class="product-card">
+            <h3>💻 Custom Development</h3>
+            <div class="price">$50/hour</div>
+            <div class="description">
+                Need a custom trading bot, website, or app? I'll build it for you. 
+                Python, JavaScript, AI integration, automation.
+            </div>
+            <button class="buy-btn" onclick="buyProduct('custom')">📧 Contact Me</button>
+        </div>
+        
+        <!-- Product 5: Trading Consultation -->
+        <div class="product-card">
+            <h3>📊 Trading Consultation</h3>
+            <div class="price">$25/session</div>
+            <div class="description">
+                1-on-1 strategy session. Learn day trading, bot setup, risk management, 
+                and how to use technical indicators.
+            </div>
+            <button class="buy-btn" onclick="buyProduct('consultation')">📅 Book Now</button>
+        </div>
+        
+        <div class="sidebar-footer">
+            <p style="color: #00ff88; font-weight: bold; margin-bottom: 10px;">
+                💰 All Payments
+            </p>
+            <p style="font-size: 0.9rem;">
+                Cash App: <strong style="color: #00ff88;">$JustinHawpetoss7</strong><br>
+                Email: justinhawpetoss7@gmail.com
+            </p>
+        </div>
     </div>
     
     <!-- Payment Modal -->
@@ -430,12 +635,109 @@
             }, 10000);
         }
         
+        // Sidebar Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('productSidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        function buyProduct(product) {
+            const products = {
+                'trader': {
+                    name: 'SpineRip Trader PRO',
+                    prices: { monthly: 19, lifetime: 99 },
+                    description: 'AI-powered day trading bot'
+                },
+                'crypto': {
+                    name: 'Crypto Trading Bots',
+                    prices: { monthly: 19, lifetime: 499 },
+                    description: '6-platform crypto bot suite'
+                },
+                'toolkit': {
+                    name: 'Warp AI Toolkit',
+                    prices: { free: 0 },
+                    description: 'App builder toolkit'
+                },
+                'custom': {
+                    name: 'Custom Development',
+                    prices: { hourly: 50 },
+                    description: 'Custom bot/app development'
+                },
+                'consultation': {
+                    name: 'Trading Consultation',
+                    prices: { session: 25 },
+                    description: '1-on-1 trading strategy session'
+                }
+            };
+            
+            const item = products[product];
+            
+            if (product === 'toolkit') {
+                window.open('https://github.com/jhawpetoss6-collab/-Initial-release-SpineRip-AppForge---AI-app-builder-', '_blank');
+                alert('🚀 Opening GitHub repository!\\n\\nFREE to use! Star the repo and follow the README.');
+                return;
+            }
+            
+            if (product === 'custom' || product === 'consultation') {
+                const message = `Hi! I'm interested in: ${item.name}\\n\\nPrice: $${Object.values(item.prices)[0]}\\n\\nPlease email me back!`;
+                window.location.href = `mailto:justinhawpetoss7@gmail.com?subject=${encodeURIComponent(item.name)}&body=${encodeURIComponent(message)}`;
+                alert('📧 Opening email client!\\n\\nSend your inquiry to: justinhawpetoss7@gmail.com');
+                return;
+            }
+            
+            // For trader and crypto - show pricing options
+            const choice = confirm(
+                `💳 ${item.name}\\n\\n` +
+                `Monthly: $${item.prices.monthly}/month\\n` +
+                `Lifetime: $${item.prices.lifetime} one-time\\n\\n` +
+                `Click OK for Monthly, Cancel for Lifetime`
+            );
+            
+            const plan = choice ? 'monthly' : 'lifetime';
+            const amount = item.prices[plan];
+            
+            // Open Cash App
+            const cashAppUrl = `https://cash.app/$JustinHawpetoss7/${amount}`;
+            window.open(cashAppUrl, '_blank');
+            
+            setTimeout(() => {
+                if (confirm(
+                    `Payment sent via Cash App?\\n\\n` +
+                    `Product: ${item.name}\\n` +
+                    `Plan: ${plan}\\n` +
+                    `Amount: $${amount}\\n\\n` +
+                    `Click OK to enter your email`
+                )) {
+                    const email = prompt('Enter your email for delivery:');
+                    if (email) {
+                        alert(
+                            `🎉 Order Received!\\n\\n` +
+                            `Product: ${item.name}\\n` +
+                            `Email: ${email}\\n\\n` +
+                            `You'll receive your license key and download link within 24 hours.\\n\\n` +
+                            `Thank you for your purchase! 💰`
+                        );
+                        
+                        // Log for tracking
+                        console.log('Purchase:', {
+                            product: item.name,
+                            plan,
+                            amount,
+                            email,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                }
+            }, 2000);
+        }
+        
         // Initialize
         checkSubscription();
         
         console.log('📈 SpineRip Trader loaded!');
         console.log('💰 Payment: $JustinHawpetoss7');
         console.log('💎 Upgrade to unlock automated trading!');
+        console.log('🛒 Click "MY PRODUCTS" to see all offerings!');
     </script>
 </body>
 </html>
